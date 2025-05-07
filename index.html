@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NASA Astronomy Picture of the Day</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 40px; background: #000; color: white; text-align: center; }
+    h1 { color: #fff; }
+    .image-container { margin-top: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    img { max-width: 80%; height: auto; border-radius: 6px; margin-top: 20px; }
+    button { padding: 10px 20px; margin-top: 20px; cursor: pointer; }
+    p { margin-top: 20px; }
+    input[type="date"] { padding: 10px; margin-top: 20px; background-color: #333; color: white; border: none; border-radius: 6px; }
+    .date-text {
+      font-size: 18px;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>NASA Astronomy Picture of the Day</h1>
+  
+  <div class="image-container">
+    <p id="date-text" class="date-text" style="display: none;"></p>
+    <img id="image" src="" alt="NASA Image" style="display: none;">
+    <p id="image-description"></p>
+  </div>
+
+  <label for="date-picker">Select a date to view an <b>APOD</b>:</label>
+  <input type="date" id="date-picker">
+  <button onclick="getImage()">Get APOD for Selected Date</button>
+
+  <script>
+    const apiKey = 'iJ2bOqL7t8umPRXZV3Wof5DGBNUb7sglcr5mvpwa'; // Replace with your NASA API key
+
+    // Function to get APOD for the selected date
+    function getImage() {
+      const date = document.getElementById('date-picker').value; // Get the selected date
+      if (!date) {
+        alert("Please select a date.");
+        return;
+      }
+
+      // URL with the selected date
+      const url = `https://api.nasa.gov/planetary/apod?api_key=${apiKey}&date=${date}`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          // Check if the data includes a valid image
+          if (data.media_type === 'image') {
+            const imgUrl = data.url;
+            const imgDescription = data.explanation;
+            const imgDate = data.date;
+            
+            const imageElement = document.getElementById('image');
+            const descriptionElement = document.getElementById('image-description');
+            const dateText = document.getElementById('date-text');
+            
+            imageElement.src = imgUrl;
+            descriptionElement.innerText = imgDescription;
+            dateText.innerText = `Date: ${imgDate}`;
+            
+            imageElement.style.display = 'block';
+            dateText.style.display = 'block';
+          } else {
+            alert("No image found for this date. It might be a video or no data available.");
+            document.getElementById('image').style.display = 'none';
+            document.getElementById('image-description').innerText = '';
+            document.getElementById('date-text').style.display = 'none';
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching the NASA image:', error);
+        });
+    }
+
+    // Function to automatically get today's APOD on page load
+    function getTodaysImage() {
+      const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+      const url = `https://api.nasa.gov/planetary/apod?api_key=${apiKey}&date=${today}`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          if (data.media_type === 'image') {
+            const imgUrl = data.url;
+            const imgDescription = data.explanation;
+            const imgDate = data.date;
+            
+            const imageElement = document.getElementById('image');
+            const descriptionElement = document.getElementById('image-description');
+            const dateText = document.getElementById('date-text');
+            
+            imageElement.src = imgUrl;
+            descriptionElement.innerText = imgDescription;
+            dateText.innerText = `Date: ${imgDate}`;
+            
+            imageElement.style.display = 'block';
+            dateText.style.display = 'block';
+          } else {
+            alert("No image found for today's APOD. It might be a video or no data available.");
+            document.getElementById('image').style.display = 'none';
+            document.getElementById('image-description').innerText = '';
+            document.getElementById('date-text').style.display = 'none';
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching the NASA image:', error);
+        });
+    }
+
+    // Call the function to load today's APOD when the page is loaded
+    window.onload = getTodaysImage;
+  </script>
+</body>
+</html>
