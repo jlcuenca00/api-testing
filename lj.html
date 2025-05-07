@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GIF Search Party 🎉</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #121212;
+      color: #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #ff5e62;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+    }
+
+    form {
+      margin-top: 1rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    input[type="text"] {
+      padding: 0.75rem;
+      border-radius: 10px;
+      border: 1px solid #444;
+      background-color: #1e1e1e;
+      color: #e0e0e0;
+      width: 250px;
+    }
+
+    input[type="text"]::placeholder {
+      color: #999;
+    }
+
+    button {
+      padding: 0.75rem 1rem;
+      background-color: #ff5e62;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #ff3e45;
+    }
+
+    .gif-container {
+      margin-top: 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    .gif-container img {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      transition: transform 0.2s ease;
+    }
+
+    .gif-container img:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <h1>GIF Search Party 🎉</h1>
+  <form id="gif-form">
+    <input type="text" id="search-input" placeholder="Type something fun..." required />
+    <button type="submit">Search</button>
+  </form>
+  <div class="gif-container" id="gif-container"></div>
+
+  <script>
+    const API_KEY = 'BwD4aQ48n8Fe5prMF9ZLDrRzanyDWBNf'; // Replace with your GIPHY API key
+
+    document.getElementById('gif-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const query = document.getElementById('search-input').value;
+      const res = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${API_KEY}&q=${encodeURIComponent(query)}&limit=12`);
+      const data = await res.json();
+
+      const container = document.getElementById('gif-container');
+      container.innerHTML = '';
+      data.data.forEach(gif => {
+        const img = document.createElement('img');
+        img.src = gif.images.fixed_height.url;
+        img.alt = gif.title;
+        container.appendChild(img);
+      });
+    });
+  </script>
+</body>
+</html>
